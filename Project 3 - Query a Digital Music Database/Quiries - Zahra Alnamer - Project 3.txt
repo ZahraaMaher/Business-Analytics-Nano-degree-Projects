@@ -1,0 +1,65 @@
+-- Q1) What is the top 5 Tracks in terms of income?
+Select Track.Name AS "Track Name", Count(InvoiceLine.Quantity) AS "Track Sales Count", SUM (InvoiceLine.UnitPrice) AS "Total Income from this Track", Album.Title AS "Album Title", Artist.Name " Artist Name"
+from Track
+JOIN Artist
+ON Artist.ArtistId=Album.ArtistId
+JOIN Album
+ON Album.AlbumId = Track.TrackId
+JOIN InvoiceLine
+ON InvoiceLine.TrackId=Track.TrackId
+JOIN Invoice
+ON InvoiceLine.InvoiceId = Invoice.InvoiceId
+Group BY Artist.Name
+Order BY SUM (InvoiceLine.UnitPrice) DESC, Album.Title DESC
+Limit 5;
+
+
+-- Q2) What are the top 5 countries in Album Sales Count?
+SELECT Album.Title, Count(InvoiceLine.UnitPrice) AS "Number of Sales", Invoice.BillingCountry AS " Country"
+From  Album
+Join Track
+ON Track.AlbumId = Album.AlbumId
+JOIN InvoiceLine
+ON InvoiceLine.TrackId = Track.TrackId
+Join Invoice
+ON Invoice.InvoiceId = InvoiceLine.InvoiceId
+GROUP BY Album.Title, Invoice.BillingCountry
+ORDER BY Count(InvoiceLine.UnitPrice) DESC
+LIMIT 5;
+
+
+-- Q3) How Many invoice that the best customer has? 
+
+SELECT Customer.CustomerId, Customer.FirstName, Customer.LastName, count(Invoice.InvoiceId) AS "Number of Invoices",Sum(Invoice.Total) AS "Total Pay"
+FROM Customer
+JOIN Invoice
+ON Invoice.CustomerId  = Customer.CustomerId
+GROUP BY Customer.CustomerId
+ORDER BY Sum(Invoice.Total) DESC
+LIMIT 10;
+
+-- Q4) Who is the employee that serves the best customer?
+
+SELECT Employee.EmployeeId AS "Employee ID", Employee.FirstName AS " Employee First Name", Employee.LastName "Employee Last Name" ,Customer.CustomerId AS "Customer ID", Customer.FirstName AS "Customer First Name", Customer.LastName AS "Customer Last Name", count(Invoice.InvoiceId) AS "Number of Invoices" ,Sum(Invoice.Total) AS " Customer Total Pay"
+From Employee
+JOIN Customer
+ON Customer.SupportRepId=Employee.EmployeeId
+JOIN Invoice
+ON Invoice.CustomerId  = Customer.CustomerId
+GROUP BY Employee.EmployeeId, Customer.CustomerId
+ORDER BY Sum(Invoice.Total) DESC
+LIMIT 5;
+
+-- [Additonal Query] Q5) Who is the Top 5 employees that Increased the sales?
+
+SELECT Employee.EmployeeId AS "Employee ID", Employee.FirstName AS " Employee First Name", Employee.LastName "Employee Last Name" , SUM(Invoice.total) AS "Total Income Sales"
+FROM Employee
+JOIN Customer
+ON Employee.EmployeeId = Customer.SupportRepId
+JOIN Invoice
+ON Customer.CustomerId = Invoice.CustomerId
+GROUP BY Employee.EmployeeId
+Order By SUM(Invoice.total) DESC;
+
+
+
